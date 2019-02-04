@@ -2,18 +2,6 @@ version: '3.5'
 
 services:
 
-  nginx:
-    
-    container_name: nginx_server
-    build: ./nginx
-    depends_on:
-      - django
-    ports:
-      - "0.0.0.0:81:80"
-    networks:
-      - postgres      
-    restart: unless-stopped
-
   django:
     container_name: django
     build: . 

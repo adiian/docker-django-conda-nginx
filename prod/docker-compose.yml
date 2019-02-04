@@ -1,0 +1,54 @@
+version: '3.5'
+
+services:
+
+  nginx:
+    container_name: nginx_server
+    image: nginx:latest
+    depends_on:
+      - django
+    ports:
+      - "0.0.0.0:81:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./django/mysite/mysite/static:/var/www/djangoapp/static
+    networks:
+      - postgres      
+    restart: unless-stopped
+
+  django:
+    container_name: django
+    build: ./django
+    depends_on: 
+      - postgres
+    ports: 
+      - "8002:8002"
+    volumes:
+       - ./django/mysite:/app
+    networks:
+      - postgres
+    restart: unless-stopped
+    tty: true
+
+  postgres:
+    container_name: postgres_container
+    build: ./postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:
